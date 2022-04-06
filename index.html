@@ -3,37 +3,37 @@
 <script src="/res/js/diff_match_patch.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-  var socket = io();
-  var input = document.getElementById('area');
-  var value = '';
-  socket.once('init', (txt) => {
-    value = txt;
-    input.value = txt;
-  });
-  var dmp = new diff_match_patch();
-  input.addEventListener('input', () => {
-    socket.emit('change', dmp.diff_main(value, input.value));
-    value = input.value;
-  });
-  socket.on('change', patch => {
-    let selection_start = input.selectionStart;
-    let selection_end = input.selectionEnd;
-    patch = dmp.patch_make(patch);
-    if (patch.start2 + patch.length2 < selection_start) {
-      selection_start += patch.length2;
-      selection_end += patch.length2;
-    }
-    value = input.value = dmp.patch_apply(patch, input.value)[0];
-    setInputSelection(input, selection_start, selection_end);
-  });
-  window.addEventListener('focus', () => socket.emit('resync'));
-  socket.on('resync', txt => {
-    value = txt;
-    input.value = txt;
-  })
+	var socket = io();
+	var input = document.getElementById("area");
+	var value = "";
+	socket.once("init", (txt) => {
+		value = txt;
+		input.value = txt;
+	});
+	var dmp = new diff_match_patch();
+	input.addEventListener("input", () => {
+		socket.emit("change", dmp.diff_main(value, input.value));
+		value = input.value;
+	});
+	socket.on("change", (patch) => {
+		let selection_start = input.selectionStart;
+		let selection_end = input.selectionEnd;
+		patch = dmp.patch_make(patch);
+		if (patch.start2 + patch.length2 < selection_start) {
+			selection_start += patch.length2;
+			selection_end += patch.length2;
+		}
+		value = input.value = dmp.patch_apply(patch, input.value)[0];
+		setInputSelection(input, selection_start, selection_end);
+	});
+	window.addEventListener("focus", () => socket.emit("resync"));
+	socket.on("resync", (txt) => {
+		value = txt;
+		input.value = txt;
+	});
 
-  function setInputSelection(el, start, end) {
-    el.selectionStart = start;
-    el.selectionEnd = end;
-  };
+	function setInputSelection(el, start, end) {
+		el.selectionStart = start;
+		el.selectionEnd = end;
+	}
 </script>
