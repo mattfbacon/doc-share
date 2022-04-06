@@ -1,9 +1,13 @@
-const express = require("express");
+import express = require("express");
+import path = require("path");
+import socketio = require("socket.io");
+import http = require("http");
+import dmp_mod = require("diff-match-patch");
+
 const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
-const path = require("path");
-const dmp = new (require("diff-match-patch"))();
+const server = http.createServer(app);
+const io = new socketio.Server(server);
+const dmp = new dmp_mod.diff_match_patch();
 
 app.get("/", (req, res) => {
 	res.sendFile(path.join(__dirname, "/index.html"));
@@ -25,6 +29,6 @@ io.on("connection", (socket) => {
 	});
 });
 
-http.listen(3000, () => {
+server.listen(3000, () => {
 	console.log("listening on port 3000");
 });
